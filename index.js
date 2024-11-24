@@ -1,25 +1,30 @@
+'use strict'
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-const { program } = require('commander');
+// const { program } = require('commander');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const upload = multer();
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('static'));
 
-program
-    .requiredOption('-h, --host <host>', 'host')
-    .requiredOption('-p, --port <port>', 'port')
-    .requiredOption('-c, --cache <cache>', 'cache');
+// program
+//     .requiredOption('-h, --host <host>', 'host')
+//     .requiredOption('-p, --port <port>', 'port')
+//     .requiredOption('-c, --cache <cache>', 'cache');
 
-program.parse(process.argv);
+// program.parse(process.argv);
 
-const { host, port, cache } = program.opts();
+const { host = '0.0.0.0', port = 8000, cache = './cache/notes.json' } = process.env;
+console.log(`Host: ${host}, Port: ${port}, Cache: ${cache}`);
+
 
 if (!fs.existsSync(cache)) {
     fs.writeFileSync(cache, JSON.stringify([])); // Initialize as an empty array
@@ -43,7 +48,7 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ['./main.js'], // Path to the API docs
+    apis: ['./index.js'], // Path to the API docs
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
@@ -238,6 +243,8 @@ app.post('/write', upload.none(), (req, res) => {
     res.status(201).send('Note saved');
 });
 
+
+
 app.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
+    console.log(`Server running at http://${host}:${port}`);
 });
