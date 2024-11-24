@@ -4,7 +4,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-// const { program } = require('commander');
+const { program } = require('commander');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -15,12 +15,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('static'));
 
-// program
-//     .requiredOption('-h, --host <host>', 'host')
-//     .requiredOption('-p, --port <port>', 'port')
-//     .requiredOption('-c, --cache <cache>', 'cache');
+program
+    .option('-h, --host <host>', 'host', '0.0.0.0')
+    .option('-p, --port <port>', 'port', 8000)
+    .option('-c, --cache <cache>', 'cache', './cache/notes.json');
 
-// program.parse(process.argv);
+program.parse(process.argv);
 
 const { host = '0.0.0.0', port = 8000, cache = './cache/notes.json' } = process.env;
 console.log(`Host: ${host}, Port: ${port}, Cache: ${cache}`);
@@ -143,7 +143,7 @@ app.put('/notes/:name', (req, res) => {
         return;
     }
     cacheJSON[noteIndex].text = content;
-    fs.writeFile(cache, JSON.stringify(cacheJSON));
+    fs.writeFile(cache, JSON.stringify(cacheJSON), () => {});
     res.status(200).send('Note updated');
 });
 
@@ -180,7 +180,7 @@ app.delete('/notes/:name', (req, res) => {
         return;
     }
     cacheJSON.splice(noteIndex, 1);
-    fs.writeFile(cache, JSON.stringify(cacheJSON));
+    fs.writeFile(cache, JSON.stringify(cacheJSON), () => {});
     res.status(200).send('Note deleted');
 });
 

@@ -19,4 +19,6 @@ COPY . .
 
 # Exports
 EXPOSE 8000
+EXPOSE 9229
+
 CMD [ "npm", "run", "start.dev" ]
