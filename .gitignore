@@ -2,3 +2,4 @@ node_modules/
 notes.json
 package-lock.json
 .env
+cache/
